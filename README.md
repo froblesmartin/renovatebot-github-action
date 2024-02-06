@@ -8,24 +8,28 @@ GitHub Action to run Renovate self-hosted.
 
 ## Table of contents
 
-- [Badges](#badges)
-- [Options](#options)
-  - [`configurationFile`](#configurationfile)
-  - [`docker-cmd-file`](#docker-cmd-file)
-  - [`docker-user`](#docker-user)
-  - [`docker-volumes`](#docker-volumes)
-  - [`env-regex`](#env-regex)
+- [GitHub Action Renovate](#github-action-renovate)
+  - [Table of contents](#table-of-contents)
+  - [Badges](#badges)
+  - [Options](#options)
+    - [`configurationFile`](#configurationfile)
+    - [`docker-cmd-file`](#docker-cmd-file)
+    - [`docker-user`](#docker-user)
+    - [`docker-volumes`](#docker-volumes)
+    - [`env-regex`](#env-regex)
   - [`mount-docker-socket`](#mount-docker-socket)
-  - [`token`](#token)
-  - [`renovate-image`](#renovate-image)
-  - [`renovate-version`](#renovate-version)
-- [Example](#example)
-- [Environment Variables](#environment-variables)
-  - [Passing other environment variables](#passing-other-environment-variables)
-- [Persisting the Repository Cache](#persisting-the-repository-cache)
-- [Troubleshooting](#troubleshooting)
-  - [Debug Logging](#debug-logging)
-  - [Special token requirements when using the `github-actions` manager](#special-token-requirements-when-using-the-github-actions-manager)
+    - [`token`](#token)
+    - [`renovate-image`](#renovate-image)
+    - [`renovate-version`](#renovate-version)
+  - [Example](#example)
+    - [Example for GitHub Enterprise](#example-for-github-enterprise)
+    - [Example with GitHub App](#example-with-github-app)
+  - [Environment Variables](#environment-variables)
+    - [Passing other environment variables](#passing-other-environment-variables)
+  - [Persisting the repository cache](#persisting-the-repository-cache)
+  - [Troubleshooting](#troubleshooting)
+    - [Debug logging](#debug-logging)
+    - [Special token requirements when using the `github-actions` manager](#special-token-requirements-when-using-the-github-actions-manager)
 
 ## Badges
 
@@ -301,7 +305,7 @@ Generate and download a new private key for the app, adding the contents of the 
 
 Adjust your Renovate configuration file to specify the username of your bot.
 
-Going forward we will be using the [`tibdex/github-app-token` action](https://github.com/tibdex/github-app-token) in order to exchange the GitHub App certificate for an access token that Renovate can use.
+Going forward we will be using the [`actions/create-github-app-token` action](https://github.com/actions/create-github-app-token) in order to exchange the GitHub App certificate for an access token that Renovate can use.
 
 The final workflow will look like this:
 
@@ -318,10 +322,12 @@ jobs:
     steps:
       - name: Get token
         id: get_token
-        uses: tibdex/github-app-token@v1
+        uses: actions/create-github-app-token@v1
         with:
-          private_key: ${{ secrets.private_key }}
-          app_id: ${{ secrets.app_id }}
+          private-key: ${{ secrets.private_key }}
+          app-id: ${{ secrets.app_id }}
+          owner: ${{ github.repository_owner }}
+          repositories: "repo1,repo2"
 
       - name: Checkout
         uses: actions/checkout@v4.1.1
